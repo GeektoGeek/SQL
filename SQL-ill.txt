@@ -1,0 +1,578 @@
+SELECT *
+FROM [dbo].[Illustration] a inner join [dbo].[IllustrationContract] a1 
+on a.Id=a1.Id inner join [dbo].[IllustrationFreeSurrenderPeriod] a2 on  ON a1.Id = a2.IllustrationId
+
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT [PreparationDate],
+       [FreePartialWithdrawalsFrequency]
+       FROM [dbo].[Illustration] where year(PreparationDate)='2019';
+
+SELECT [PreparationDate],
+       [FreePartialWithdrawalsFrequency]
+       FROM [dbo].[Illustration] where year(PreparationDate)='2018';
+
+SELECT [PreparationDate],
+       [SurrenderChargePeriod], StrategyOption
+       FROM [dbo].[Illustration] where year(PreparationDate)='2019';
+
+SELECT [PreparationDate],
+       [SurrenderChargePeriod], StrategyOption
+       FROM [dbo].[Illustration] where year(PreparationDate)='2018';
+
+
+Hi Jeff,
+
+I have a quick questions.
+
+1.	In the Illustration table, there is a column ‘FreePartialWithdrawalsFrequency.’ 
+
+For 2019, I am noticing that all FreePartialWithdrawalsFrequency values are captured as ‘NULL.’ However for the previous years (e.g., 2018, 2017, 2016), in the same field captured 2 values: ‘Annual’ or ‘Monthly.’ 
+        
+ Do you know why?  I double checked it on my end, so if you need to see the SQL Query (fairly straight forward) for the data-pull, please let me know.
+
+10-3
+-------
+SELECT i.[Id]
+  	  ,i.[PreparationDate]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+
+  FROM 
+  [dbo].[IllustrationContract] c JOIN  [dbo].[Illustration] i ON i.Id = c.IllustrationId 
+
+  where year(i.[PreparationDate])>= '2018'
+  
+  group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[id], 
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+    i.[TaxStatus],
+	i.[VariableAssumedDiscreteIndex],
+	i.[SurrenderChargePeriod]
+
+Today
+
+
+Final Query
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT i.[Id]
+  	  ,i.[PreparationDate]
+      	  ,c.[Index]
+          ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+
+  FROM 
+  [dbo].[IllustrationContract] c JOIN  [dbo].[Illustration] i ON i.Id = c.IllustrationId 
+
+  where year(i.[PreparationDate])>= '2018'
+  
+  group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[id], 
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate]
+
+--------------------------------------------------------------------------------------------------------------------
+SELECT i.[Id]
+  	  ,i.[PreparationDate]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId 
+  
+  group by 
+	i.[PreparationDate],
+	i.[id], 
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate]
+
+
+SELECT i.[Id]
+  	  ,i.[PreparationDate]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId 
+  
+  group by 
+	i.[PreparationDate],
+	i.[id], 
+
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate]
+
+----------------------------------------------------------------------------------------------------
+SQL-10-6
+SELECT i.[Id]
+  	  ,i.[PreparationDate]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+
+  FROM 
+  [dbo].[IllustrationContract] c JOIN  [dbo].[Illustration] i ON i.Id = c.IllustrationId 
+
+  where year(i.[PreparationDate])>= '2018'
+  
+  group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[id], 
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+    i.[TaxStatus],
+	i.[VariableAssumedDiscreteIndex],
+	i.[SurrenderChargePeriod],
+	i.[CoAnnuitant],
+	i.[RateOfReturnStyle]
+
+
+
+SELECT i.[Id]
+  	  ,i.[PreparationDate]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+
+  FROM 
+  [dbo].[IllustrationContract] c JOIN  [dbo].[Illustration] i ON i.Id = c.IllustrationId 
+
+  where year(i.[PreparationDate])< '2018'
+  
+  group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[id], 
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+    i.[TaxStatus],
+	i.[VariableAssumedDiscreteIndex],
+	i.[SurrenderChargePeriod],
+	i.[CoAnnuitant],
+	i.[RateOfReturnStyle]
+
+
+SELECT  CAST(i.PreparationDate as DATE)
+         FROM dbo.Illustration i where year(PreparationDate)='2019'
+
+
+Final Query Pre
+
+SELECT i.[Id]
+  	  ,CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+      	  ,c.[Index]
+      	  ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+
+  FROM 
+  [dbo].[IllustrationContract] c JOIN  [dbo].[Illustration] i ON i.Id = c.IllustrationId 
+
+  where CAST(i.PreparationDate as DATE) < '2018-04-23'
+  
+  group by 
+    	c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    	c.[IncomeInputPremiumPercentage],
+    	i.[TaxStatus],
+	i.[VariableAssumedDiscreteIndex],
+	i.[SurrenderChargePeriod],
+	i.[CoAnnuitant],
+	i.[RateOfReturnStyle]	
+
+
+
+Final Query Post
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+
+
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT i.[Id]
+  	  ,CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+      ,u.[AgentID]
+      ,u.[Username]
+      ,u.[AgencyID]
+	  ,u.[Role]
+
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+
+  where CAST(i.PreparationDate as DATE) >= '2018-04-23'
+  
+    group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+        c.[IncomeInputPremiumPercentage],
+        i.[TaxStatus],
+	i.[VariableAssumedDiscreteIndex],
+	i.[SurrenderChargePeriod],
+	i.[CoAnnuitant],
+	i.[RateOfReturnStyle]	
+
+
+      ,[AgentID]
+      ,[Username]
+      ,[AgencyID]
+      ,[Role]
+
+GO
+
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT i.[Id]
+  	  ,CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+      ,u.[AgentID]
+      ,u.[Username]
+      ,u.[AgencyID]
+	  ,u.[Role]
+
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+
+  where CAST(i.PreparationDate as DATE) < '2018-04-23'
+  
+    group by 
+    	c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+   	 c.[IncomeInputPremiumPercentage],
+   	 i.[TaxStatus],
+	i.[VariableAssumedDiscreteIndex],
+	i.[SurrenderChargePeriod],
+	i.[CoAnnuitant],
+	i.[RateOfReturnStyle]	
+
+    ,[AgentID]
+    ,[Username]
+    ,[AgencyID]
+    ,[Role]
+
+GO
+
+With Product
+---------
+
+SELECT i.[Id]
+  	  ,CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+	  ,i.[Product]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+      ,u.[AgentID]
+      ,u.[Username]
+      ,u.[AgencyID]
+	  ,u.[Role]
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+
+  where CAST(i.PreparationDate as DATE) < '2018-04-23'
+  
+    group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	i.[Product],
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+    i.[TaxStatus],
+	i.[VariableAssumedDiscreteIndex],
+	i.[SurrenderChargePeriod],
+	i.[CoAnnuitant],
+	i.[RateOfReturnStyle]	
+
+
+    ,[AgentID]
+    ,[Username]
+    ,[AgencyID]
+    ,[Role]
+
+GO
+
+With Product
+
+SELECT i.[Id]
+  	  ,CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+	  ,i.[Product]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+      ,u.[AgentID]
+      ,u.[Username]
+      ,u.[AgencyID]
+	  ,u.[Role]
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+
+  where CAST(i.PreparationDate as DATE) >= '2018-04-23'
+  
+    group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	i.[Product],
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+    i.[TaxStatus],
+	i.[VariableAssumedDiscreteIndex],
+	i.[SurrenderChargePeriod],
+	i.[CoAnnuitant],
+	i.[RateOfReturnStyle]	
+
+
+    ,[AgentID]
+    ,[Username]
+    ,[AgencyID]
+    ,[Role]
+
+GO
+
+
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+
+SELECT i.[Id]
+  	  ,CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+	  ,i.[Product]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,c.[Rider]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+          ,a.[Code]
+         ,(a.[Firstname]+' '+ a.[LastName]) as Name
+         ,a.[Imo]
+	 ,a.[Role]
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+  LEFT JOIN [dbo].[ImoAgent] a ON u.AgentID = a.Code
+
+where CAST(i.PreparationDate as DATE) < '2018-04-23'
+  
+    group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	i.[Product],
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+	c.[Rider]
+    i.[TaxStatus],
+    i.[VariableAssumedDiscreteIndex],
+    i.[SurrenderChargePeriod],
+    i.[CoAnnuitant],
+    i.[RateOfReturnStyle]	
+	,a.[Code]
+    ,(a.[Firstname]+' '+ a.[LastName]) 
+    ,a.[Imo]
+    ,a.[Role]
+GO
