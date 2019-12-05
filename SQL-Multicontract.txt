@@ -1,0 +1,330 @@
+SELECT i.Id as IllustrationID,
+       i.UserId,
+       c.Id as IllusContractID,
+	   c.IllustrationId as ForeignKey,
+  	   CAST(i.PreparationDate as DATE) as PreparationDate
+ 
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+
+where (CAST(i.PreparationDate as DATE) >= '2018-11-26' and CAST(i.PreparationDate as DATE) < '2019-11-26')
+    
+GO
+
+
+SELECT 
+       i.Id as IllustrationID,
+       i.UserId,
+       c.Id as IllusContractID,
+	   c.IllustrationId as ForeignKey_IllustrationID,
+  	   CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+	  ,i.[Product]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[Rider]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+          ,a.[Code]
+         ,(a.[Firstname]+' '+ a.[LastName]) as Name
+         ,a.[Imo]
+	 ,a.[Role]
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+  LEFT JOIN [dbo].[ImoAgent] a ON u.AgentID = a.Code
+
+where  (CAST(i.PreparationDate as DATE) >= '2018-11-26' and CAST(i.PreparationDate as DATE) < '2019-11-26')
+  
+    group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	i.[UserId],
+	i.[Product],
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+	i.[Rider],
+    i.[TaxStatus],
+    i.[VariableAssumedDiscreteIndex],
+    i.[SurrenderChargePeriod],
+    i.[CoAnnuitant],
+    i.[RateOfReturnStyle]	
+	,a.[Code]
+    ,(a.[Firstname]+' '+ a.[LastName]) 
+    ,a.[Imo]
+    ,a.[Role]
+GO
+
+
+SELECT i.Id as IllustrationID,
+       i.UserId,
+       c.Id as IllusContractID,
+	   c.IllustrationId as ForeignKey,
+	   fs.StartAge,
+	   fs.EndAge,
+	   fs.AnnualRateOrAmount,
+  	   CAST(i.PreparationDate as DATE) as PreparationDate
+   FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[IllustrationFreeSurrenderPeriod] fs ON (fs.IllustrationId = i.Id and fs.IllustrationContractId= c.Id)
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+where (CAST(i.PreparationDate as DATE) >= '2018-11-26' and CAST(i.PreparationDate as DATE) < '2019-11-26')
+    
+GO
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+
+/*** Free SurrendarPeriod ***/
+
+SELECT 
+       i.Id as IllustrationID,
+       i.UserId,
+       c.Id as IllusContractID,
+	   c.IllustrationId as ForeignKey_IllustrationID,
+  	   CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+	  ,i.[Product]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[Rider]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+          ,a.[Code]
+         ,(a.[Firstname]+' '+ a.[LastName]) as Name
+         ,a.[Imo]
+	 ,a.[Role]
+	,fs.StartAge,
+	 ,fs.EndAge,
+	 ,fs.AnnualRateOrAmount
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[IllustrationFreeSurrenderPeriod] fs ON (fs.IllustrationId = i.Id and fs.IllustrationContractId= c.Id)
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+  LEFT JOIN [dbo].[ImoAgent] a ON u.AgentID = a.Code
+
+where  (CAST(i.PreparationDate as DATE) >= '2018-11-26' and CAST(i.PreparationDate as DATE) < '2019-11-26')
+
+group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	i.[UserId],
+	i.[Product],
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+	i.[Rider],
+    i.[TaxStatus],
+    i.[VariableAssumedDiscreteIndex],
+    i.[SurrenderChargePeriod],
+    i.[CoAnnuitant],
+    i.[RateOfReturnStyle]	
+	,a.[Code]
+    ,(a.[Firstname]+' '+ a.[LastName]) 
+    ,a.[Imo]
+    ,a.[Role]
+	,fs.StartAge
+	,fs.EndAge
+	,fs.AnnualRateOrAmount
+GO
+
+/*************************/
+
+/*** Free SurrendarPeriod ***/
+
+SELECT 
+       i.Id as IllustrationID,
+       i.UserId,
+       c.Id as IllusContractID,
+	   c.IllustrationId as ForeignKey_IllustrationID,
+  	   CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+	  ,i.[Product]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[Rider]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,fs.IllustrationId as FsIllus_IdMatch
+	  ,fs.IllustrationContractId as FsIllustContr_IdMatch
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+      ,a.[Code]
+      ,(a.[Firstname]+' '+ a.[LastName]) as Name
+      ,a.[Imo]
+	 ,a.[Role],
+      fs.IllustrationId
+	 ,fs.IllustrationContractId
+	,fs.StartAge
+	,fs.EndAge
+	,fs.AnnualRateOrAmount
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  LEFT JOIN [dbo].[IllustrationFreeSurrenderPeriod] fs ON (fs.IllustrationId = i.Id and fs.IllustrationContractId =c.id)
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+  LEFT JOIN [dbo].[ImoAgent] a ON u.AgentID = a.Code
+
+where  (CAST(i.PreparationDate as DATE) >= '2018-11-26' and CAST(i.PreparationDate as DATE) < '2019-11-26')
+
+group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	i.[UserId],
+	i.[Product],
+	c.Id,
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+	i.[Rider],
+    i.[TaxStatus],
+    i.[VariableAssumedDiscreteIndex],
+    i.[SurrenderChargePeriod],
+    i.[CoAnnuitant],
+    i.[RateOfReturnStyle]	
+   ,a.[Code]
+    ,(a.[Firstname]+' '+ a.[LastName]) 
+    ,a.[Imo]
+    ,a.[Role]
+	,fs.StartAge
+	,fs.EndAge
+	,fs.AnnualRateOrAmount
+	,fs.IllustrationId
+	,fs.IllustrationContractId
+GO
+
+/**** Join of Three ***/
+
+SELECT 
+       i.Id as IllustrationID,
+       i.UserId,
+       c.Id as IllusContractID,
+	   c.IllustrationId as ForeignKey_IllustrationID,
+  	   CAST(i.PreparationDate as DATE) as PreparationDate
+	  ,i.[PreparedBy]
+	  ,i.[ClientFirstName]
+	  ,i.[ClientLastName]
+	  ,i.[Product]
+      ,c.[Index]
+      ,c.[StrategyOption]
+	  ,c.[NetFixedRate]
+	  ,c.[IllustrationId]
+	  ,c.[FreePartialWithdrawalsFrequency]
+	  ,c.[IncomeInputPremiumPercentage]
+	  ,i.[Rider]
+	  ,i.[TaxStatus]
+	  ,i.[VariableAssumedDiscreteIndex]
+	  ,i.[SurrenderChargePeriod]
+	  ,i.[CoAnnuitant]
+	  ,i.[RateOfReturnStyle]
+	  ,fs.IllustrationId as FsIllus_IdMatch
+	  ,fs.IllustrationContractId as FsIllustContr_IdMatch
+	  ,COUNT(DISTINCT c.[Id]) ContractCount
+	  ,COUNT(DISTINCT c.[IllustrationId]) IllusID
+	  ,SUM(c.[IncomePremiumAmount]) ContractSum
+	  ,SUM(c.[IncomeInputPremiumPercentage]) PercentageSum
+      ,a.[Code]
+      ,(a.[Firstname]+' '+ a.[LastName]) as Name
+      ,a.[Imo]
+	 ,a.[Role],
+      fs.IllustrationId
+	 ,fs.IllustrationContractId
+	,fs.StartAge
+	,fs.EndAge
+	,fs.AnnualRateOrAmount
+  FROM [dbo].[Illustration] i
+  JOIN [dbo].[IllustrationContract] c ON i.Id = c.IllustrationId
+  JOIN [dbo].[IllustrationFreeSurrenderPeriod] fs ON (fs.IllustrationId = i.Id and fs.IllustrationContractId =c.id)
+  LEFT JOIN [dbo].[User] u ON i.UserId = u.Id
+  LEFT JOIN [dbo].[ImoAgent] a ON u.AgentID = a.Code
+
+where  (CAST(i.PreparationDate as DATE) >= '2018-11-26' and CAST(i.PreparationDate as DATE) < '2019-11-26')
+
+group by 
+    c.[IllustrationId],
+	i.[PreparationDate],
+	i.[PreparedBy],
+	i.[ClientFirstName],
+	i.[ClientLastName],
+	i.[id], 
+	i.[UserId],
+	i.[Product],
+	c.Id,
+	c.[Index],
+	c.[StrategyOption],
+	c.[NetFixedRate],
+	c.[FreePartialWithdrawalsFrequency],
+    c.[IncomeInputPremiumPercentage],
+	i.[Rider],
+    i.[TaxStatus],
+    i.[VariableAssumedDiscreteIndex],
+    i.[SurrenderChargePeriod],
+    i.[CoAnnuitant],
+    i.[RateOfReturnStyle]	
+   ,a.[Code]
+    ,(a.[Firstname]+' '+ a.[LastName]) 
+    ,a.[Imo]
+    ,a.[Role]
+	,fs.StartAge
+	,fs.EndAge
+	,fs.AnnualRateOrAmount
+	,fs.IllustrationId
+	,fs.IllustrationContractId
+GO
+
+
+
