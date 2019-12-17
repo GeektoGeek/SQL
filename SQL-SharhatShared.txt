@@ -1,0 +1,244 @@
+/*** a2 run, but other did not retreive any results ***/
+
+
+
+/**** Sarath Query *****/
+
+/2017 and stopped – Shiller --  producers who sold BCA & Shiller in 2017 and stopped selling any Athene in 2018, 2019   ****/
+
+
+
+select sk.SFContactId,AdvisorName, max(IssueDate) LatestIssueDateWithInTheDataSet, max(a.SFAtheneLastSubmitDate) AtheneLastSubmitDate, count(sk.policynumber) PolicyCount, sum(tp) TotalAmount
+from
+(
+select
+distinct ad.SFContactId, ad.FullName AdvisorName, ca.PolicyNumber, tp, c.IssueDate 
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+left outer join ContractValuationPivoted cvp on ca.PolicyNumber = cvp.PolicyNumber
+left outer join #adv ad on ca.AdvisorKey = ad.AdvisorKey
+where
+year(c.issuedate) in (2017)
+and mcp.ProductFamilyCode = 'BCA'
+
+and ca.advisorkey in 
+(select advisorkey from advisor a
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+)
+and ca.AdvisorKey not in
+
+(
+select
+distinct ca.advisorkey 
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+where
+year(c.issuedate) in (2017)
+  and mcp.ProductFamilyCode = 'BCA'
+and strategyfamily = 'Shiller'
+and ca.advisorkey in 
+(select advisorkey from advisor a
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+)
+)
+
+and ca.advisorkey not in
+(
+
+select
+distinct ca.advisorkey
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+where
+year(c.issuedate)in (2018,2019)
+and mcp.ProductFamilyCode in ('BCA','VEL')
+
+
+and ca.advisorkey 
+in (select advisorkey from advisor a
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+)
+)
+) sk
+left outer join #adv a
+on
+sk.SFContactId = a.SFContactId
+group by sk.SFContactId,AdvisorName
+
+
+/**** a4 run ****/
+
+/*** Anyone who has sold Shiller this year i.e. 2019 (either index) ****/
+
+select sk.SFContactId,AdvisorName, max(IssueDate) LatestIssueDateWithInTheDataSet, max(a.SFAtheneLastSubmitDate) AtheneLastSubmitDate, count(sk.policynumber) PolicyCount, sum(tp) TotalAmount
+from
+(
+select
+distinct ad.SFContactId, ad.FullName AdvisorName, ca.PolicyNumber, tp, c.IssueDate 
+from
+
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+left outer join ContractValuationPivoted cvp on ca.PolicyNumber = cvp.PolicyNumber
+left outer join #adv ad on ca.AdvisorKey = ad.AdvisorKey
+where
+year(c.issuedate) in (2018)
+and mcp.ProductFamilyCode = 'BCA'
+
+and ca.advisorkey in 
+(select advisorkey from advisor a
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+)
+and ca.AdvisorKey not in
+
+(
+select
+distinct ca.advisorkey 
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+where
+year(c.issuedate) in (2018)
+  and mcp.ProductFamilyCode = 'BCA'
+and strategyfamily = 'Shiller'
+and ca.advisorkey in 
+(select advisorkey from advisor a
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+)
+)
+
+and ca.advisorkey not in
+(
+
+select
+distinct ca.advisorkey
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+where
+year(c.issuedate)in (2019)
+and mcp.ProductFamilyCode in ('BCA','VEL')
+
+and ca.advisorkey 
+in (select advisorkey from advisor a
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+)
+)
+) sk
+left outer join #adv a
+on
+sk.SFContactId = a.SFContactId
+group by sk.SFContactId,AdvisorName
+
+/****b1. Anyone who has sold Shiller this year (either index) – 1320
+              -10+ Shiller policies - 5 + ****/
+
+
+
+
+
+
+
+
+select sk.SFContactId,AdvisorName, max(IssueDate) LatestIssueDateWithInTheDataSet, max(a.SFAtheneLastSubmitDate) AtheneLastSubmitDate, count(sk.policynumber) PolicyCount, sum(tp) TotalAmount
+from
+(
+select
+distinct ad.SFContactId, ad.FullName AdvisorName, ca.PolicyNumber, tp, c.IssueDate 
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+left outer join ContractValuationPivoted cvp on ca.PolicyNumber = cvp.PolicyNumber
+left outer join #adv ad on ca.AdvisorKey = ad.AdvisorKey
+where
+year(c.issuedate) = 2019
+and mcp.ProductFamilyCode = 'BCA'
+
+and ca.advisorkey 
+in 
+(
+select advisorkey from advisor a
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+)
+and ca.AdvisorKey not in
+
+(
+select
+distinct ca.advisorkey 
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+where
+year(c.issuedate) in (2019)
+  and mcp.ProductFamilyCode = 'BCA'
+and strategyfamily = 'Shiller'
+and ca.advisorkey in 
+(select advisorkey from advisor a
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+)
+)
+) sk
+left outer join #adv a
+on
+sk.SFContactId = a.SFContactId
+group by sk.SFContactId,AdvisorName
+having count(distinct policynumber) >= 5
