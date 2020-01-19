@@ -1,0 +1,126 @@
+/****** Script for SelectTopNRows command from SSMS  ******/
+
+### Sum of Premium came as 5.52B
+
+SELECT 
+       [CarrierKey]
+      ,[PolicyNumber]
+      ,[IMOKey]
+      ,[OriginalPolicyNumber]
+       ,[ProductTypeCode]
+       ,[IssueProcessedDate]
+       ,[IssueDate]
+      ,[AsOfDate]
+      ,[SFOpportunityId]
+      ,[PolicyValueAmount]
+      ,[ChannelKey]
+into #check
+  FROM [ETLStaging].[dbo].[Contract] 
+  where
+   year 
+  (IssueDate) in (2018) 
+
+  select * from #check
+
+  SELECT 
+       a.[CarrierKey]
+      ,a.[PolicyNumber]
+      ,b.[TP]
+      ,b.[DeletedFlag]
+  FROM #check a INNER JOIN [ETLStaging].[dbo].[ContractValuationPivoted] b
+  on a.PolicyNumber= b.PolicyNumber and a.CarrierKey = b.CarrierKey
+
+
+### Paid Query Finalized with Sharaht on 01142020
+
+SELECT 
+       [CarrierKey]
+      ,[PolicyNumber]
+      ,[IMOKey]
+      ,[OriginalPolicyNumber]
+       ,[ProductTypeCode]
+       ,[IssueProcessedDate]
+       ,[IssueDate]
+       ,[AsOfDate]
+       ,[SFOpportunityId]
+       ,[PolicyValueAmount]
+       ,[ChannelKey]
+into #check
+  FROM [ETLStaging].[dbo].[Contract] 
+  where
+   year(IssueDate) in (2018) 
+
+  select * from #check
+
+
+  SELECT 
+       distinct(a.[CarrierKey])
+      ,a.[PolicyNumber]
+      ,b.[TP]
+      ,b.[DeletedFlag]
+	  , ProductFamilyCode
+	  --into #temp
+  FROM #check a 
+  left outer JOIN [ETLStaging].[dbo].[ContractValuationPivoted] b
+  on a.PolicyNumber= b.PolicyNumber and a.CarrierKey = b.CarrierKey
+  left outer join MappedContractProduct mcp
+  on
+  a.PolicyNumber = mcp.PolicyNumber
+  where 
+  a.CarrierKey in (1,3,2) -- For Furture reference please make sure to check if NH is 1 and Athene (BCA) is 3 or vice versa to pull the data accurately
+  and mcp.ProductFamilyCode in ('IUL','NH','BCA')
+  --and a.[PolicyNumber] not in (select [PolicyNumber] from MappedContractProduct where ProductFamilycode in ('NH','BCA'))
+  and (ChannelKey in (2,3
+  ) or ChannelKey is null)
+
+
+  
+ /***  SELECT 
+       
+	 ProductFamilyCode, count(*)
+	  --into #temp
+  FROM #check a INNER JOIN [ETLStaging].[dbo].[ContractValuationPivoted] b
+  on a.PolicyNumber= b.PolicyNumber and a.CarrierKey = b.CarrierKey
+  left outer join MappedContractProduct mcp
+  on
+  a.PolicyNumber = mcp.PolicyNumber
+  where 
+  a.CarrierKey in (1,3)
+  and a.[PolicyNumber] not in (select [PolicyNumber] from MappedContractProduct where ProductFamilycode in ('NH','BCA'))
+  and (ChannelKey in (2,3) or ChannelKey is null)
+  group by ProductFamilyCode
+  
+  select * from #temp
+
+  select * from product p where p.ProductFamilyCode = 'NWS'
+
+
+  select sum(tp) from #temp ***/
+
+
+### Production Query From the Past
+
+select
+sp.ProductionNumber
+, SFSplitsCId
+, a.fullname AdvisorName
+, a.sfcontactid
+, m.FirstName +' '+ m.LastName MarketerName
+, m.sfcontactid
+, i.IMOName
+, sp.submitamount
+, sp.SubmitDate
+, cr.CarrierName
+, sp.ProductCode
+from
+SubmittedProduction sp
+left outer join advisor a on sp.advisorkey = a.advisorkey
+left outer join marketer m on sp.sfmarketerCid = m.SFMarketerCId
+left outer join imo i on sp.imokey = i.imokey
+left outer join carrier cr on cr.CarrierKey = sp.CarrierKey
+
+where
+year(sp.submitdate) = 2018
+and sp.deletedflag = 0
+
+
