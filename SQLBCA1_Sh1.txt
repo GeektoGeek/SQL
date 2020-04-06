@@ -1,0 +1,115 @@
+
+----- Sum of TP came $154739393 i.e., 154Mil
+
+SELECT 
+       [CarrierKey]
+      ,[PolicyNumber]
+      ,[IMOKey]
+      ,[OriginalPolicyNumber]
+       ,[ProductTypeCode]
+       ,[IssueProcessedDate]
+       ,CAST([IssueDate] as DATE) as IssueDate
+       ,CAST([AsOfDate] as DATE) as AsOfDate
+       ,[SFOpportunityId]
+       ,[PolicyValueAmount]
+       ,[ChannelKey]
+into #check
+FROM [ETLStaging].[dbo].[Contract] 
+  where
+   year(IssueDate) in (2020) 
+
+
+select * from #check
+
+SELECT 
+    distinct(a.[CarrierKey])
+    ,a.[PolicyNumber]
+	,CAST(a.IssueDate as DATE) as IssueDate
+    ,CAST(a.AsOfDate as DATE) as AsOfDate
+	,a.ProductTypeCode
+    ,b.[TP]
+    ,b.[DeletedFlag]
+	,mcp.ProductFamilyCode
+	,mcp.ProductFamilyName
+	,mcp.ProductName
+	,mcp.ProductDescription
+	,l.StrategyFamily
+	into #temp
+FROM #check a 
+left outer JOIN [ETLStaging].[dbo].[ContractValuationPivoted] b
+on ((a.PolicyNumber= b.PolicyNumber) and (a.CarrierKey = b.CarrierKey))
+left outer join MappedContractProduct mcp
+on a.PolicyNumber = mcp.PolicyNumber
+left outer join UnderlyingAsset ua 
+on a.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l
+on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+where 
+a.CarrierKey in (1)
+and mcp.ProductFamilyCode in ('BCA')
+and strategyfamily like '%Shiller%'
+  --and a.[PolicyNumber] not in (select [PolicyNumber] from MappedContractProduct where ProductFamilycode in ('BCA'))
+and (ChannelKey in (2,3) or ChannelKey is null)
+and CAST(a.IssueDate as DATE) > '2020-02-02'
+
+select sum(TP) from #temp
+
+select sum(TP) from #temp
+
+
+-----Extracting all Athene after Feb 3rd 2020
+
+-----### 2797 rows... 354Mil
+
+SELECT 
+       [CarrierKey]
+      ,[PolicyNumber]
+      ,[IMOKey]
+      ,[OriginalPolicyNumber]
+       ,[ProductTypeCode]
+       ,[IssueProcessedDate]
+       ,CAST([IssueDate] as DATE) as IssueDate
+       ,CAST([AsOfDate] as DATE) as AsOfDate
+       ,[SFOpportunityId]
+       ,[PolicyValueAmount]
+       ,[ChannelKey]
+into #check5
+FROM [ETLStaging].[dbo].[Contract] 
+  where
+   year(IssueDate) in (2020) 
+
+select * from #check5
+
+SELECT 
+    distinct(a.[CarrierKey])
+    ,a.[PolicyNumber]
+	,CAST(a.IssueDate as DATE) as IssueDate
+    ,CAST(a.AsOfDate as DATE) as AsOfDate
+	,a.ProductTypeCode
+    ,b.[TP]
+    ,b.[DeletedFlag]
+	,mcp.ProductFamilyCode
+	,mcp.ProductFamilyName
+	,mcp.ProductName
+	,mcp.ProductDescription
+	,l.StrategyFamily
+	into #temp5
+FROM #check5 a 
+left outer JOIN [ETLStaging].[dbo].[ContractValuationPivoted] b
+on ((a.PolicyNumber= b.PolicyNumber) and (a.CarrierKey = b.CarrierKey))
+left outer join MappedContractProduct mcp
+on a.PolicyNumber = mcp.PolicyNumber
+left outer join UnderlyingAsset ua 
+on a.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l
+on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+where 
+a.CarrierKey in (1,3,2)
+and mcp.ProductFamilyCode in ('BCA')
+  --and a.[PolicyNumber] not in (select [PolicyNumber] from MappedContractProduct where ProductFamilycode in ('BCA'))
+and (ChannelKey in (2,3) or ChannelKey is null)
+and CAST(a.IssueDate as DATE) > '2020-02-02'
+
+select * from #temp5
+
+select sum(TP) from #temp5
