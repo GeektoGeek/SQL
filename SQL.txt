@@ -1,0 +1,58 @@
+Select * from FROM [ETLStaging].[dbo].[Carrier]
+
+### Transamerica Carrier Key =4
+
+## This will give us the ProductCode TASec5 or TASec10 or ProductName
+
+### This gives 2 Product Family Code 'TBD' and 'TAS'
+
+###  This gives 3 Product Description are 'TA Secure 10 Year Product', 'TA Secure 5 Year Product' and 'Unknown'
+
+SELECT [CarrierKey]
+      ,[PolicyNumber]
+      ,[ProductCode]
+      ,[ProductName]
+      ,[ProductDescription]
+      ,[ProductTypeCode]
+      ,[ProductTypeDescription]
+      ,[ProductFamilyCode]
+      ,[ProductFamilyName]
+      ,[LastModifiedTimestamp]
+  FROM [ETLStaging].[dbo].[MappedContractProduct] where CarrierKey=4
+
+select distinct([ProductFamilyCode]) from [ETLStaging].[dbo].[MappedContractProduct]  where CarrierKey=4
+
+select distinct([ProductDescription]) from [ETLStaging].[dbo].[MappedContractProduct]  where CarrierKey=4
+
+
+SELECT 
+       distinct(a.[CarrierKey])
+	  ,a.[CarrierProductCode]
+      ,a.[PolicyNumber]
+      ,b.[TP]
+      ,b.[DeletedFlag]
+	  ,mcp.[ProductName]
+	  ,mcp.[ProductDescription]
+	  ,mcp.[ProductFamilyCode]
+	  ,mcp.[ProductTypeCode]
+	  ,atm.*
+	  --into #temp
+  FROM #check5 a 
+  left outer JOIN [ETLStaging].[dbo].[ContractValuationPivoted] b
+  on a.PolicyNumber= b.PolicyNumber and a.CarrierKey = b.CarrierKey
+  left outer join MappedContractProduct mcp
+  on
+  a.PolicyNumber = mcp.PolicyNumber
+  left outer join [ETLStaging].[dbo].[LKP_RidersCategory] atm
+  on a.CarrierKey= atm.CarrierKey
+  where 
+  a.CarrierKey in (4)
+  and mcp.ProductFamilyCode in ('TAS','TBD')
+  and  mcp.ProductCode in ('TASec5', 'TASec10', 'UNK')
+  --and a.[PolicyNumber] not in (select [PolicyNumber] from MappedContractProduct where ProductFamilycode in ('NH','BCA'))
+  and (ChannelKey in (2,3) or ChannelKey is null)
+
+
+
+
+
