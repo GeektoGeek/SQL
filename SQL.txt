@@ -1,58 +1,55 @@
-Select * from FROM [ETLStaging].[dbo].[Carrier]
+select * 
+into #adv2
+from advisor a 
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
 
-### Transamerica Carrier Key =4
+select
+distinct ca.advisorkey as CAAdvisorKey, ad.*, mcp.PolicyNumber as contractPolNum, mcp.ProductCode, mcp.ProductDescription,mcp.ProductFamilyCode, mcp.ProductFamilyName, mcp.ProductName, mcp.ProductTypeCode, ua.CarrierKey as UACarrierKey, ua.FundValueAmount, ua.FeePercentage, ua.GuaranteedInterestRate, ua.UnderlyingSecurityName, ua.UnderlyingSecurityTypeCode, ua.FundPercentage, b.TP, b.PolicyNumber, c.IssueDate, c.IssueProcessedDate, atm.ServiceFeatureProductCode, atm.Carrier_Rider_Description, atm.RiderType, atm.Carrier, atm.RiderFamily, atm.Bonus, atm.Joint, atm.SFExportRiderMarketingName into #check8
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer JOIN ContractValuationPivoted b on c.PolicyNumber= b.PolicyNumber and c.CarrierKey = b.CarrierKey
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+left outer join #adv2 ad on ca.AdvisorKey = ad.AdvisorKey
+left outer join LKP_RidersCategory atm on c.CarrierKey= atm.CarrierKey
+where 
+year(c.issuedate) in (2018,2019,2020) 
+--and mcp.ProductFamilyName in ('New Heights')
+and mcp.ProductFamilyName in ('Balanced Choice Annuity') 
+-- and mcp.ProductCode in ('NHSA', 'NHSB','NS12', 'NS8A'  ,'NS9A' ,'NS9B','NS9C')
+and  ca.AdvisorKey = ad.AdvisorKey
+and(l.CarrierKey= 1)
+and ((atm.Carrier_Rider_Description='Fer Max With Premium Bonus') or (atm.Carrier_Rider_Description= 'Fer With Premium Bonus'))
+--and(l.CarrierKey= 1 or l.CarrierKey= 3)
 
-## This will give us the ProductCode TASec5 or TASec10 or ProductName
-
-### This gives 2 Product Family Code 'TBD' and 'TAS'
-
-###  This gives 3 Product Description are 'TA Secure 10 Year Product', 'TA Secure 5 Year Product' and 'Unknown'
-
-SELECT [CarrierKey]
-      ,[PolicyNumber]
-      ,[ProductCode]
-      ,[ProductName]
-      ,[ProductDescription]
-      ,[ProductTypeCode]
-      ,[ProductTypeDescription]
-      ,[ProductFamilyCode]
-      ,[ProductFamilyName]
-      ,[LastModifiedTimestamp]
-  FROM [ETLStaging].[dbo].[MappedContractProduct] where CarrierKey=4
-
-select distinct([ProductFamilyCode]) from [ETLStaging].[dbo].[MappedContractProduct]  where CarrierKey=4
-
-select distinct([ProductDescription]) from [ETLStaging].[dbo].[MappedContractProduct]  where CarrierKey=4
-
-
-SELECT 
-       distinct(a.[CarrierKey])
-	  ,a.[CarrierProductCode]
-      ,a.[PolicyNumber]
-      ,b.[TP]
-      ,b.[DeletedFlag]
-	  ,mcp.[ProductName]
-	  ,mcp.[ProductDescription]
-	  ,mcp.[ProductFamilyCode]
-	  ,mcp.[ProductTypeCode]
-	  ,atm.*
-	  --into #temp
-  FROM #check5 a 
-  left outer JOIN [ETLStaging].[dbo].[ContractValuationPivoted] b
-  on a.PolicyNumber= b.PolicyNumber and a.CarrierKey = b.CarrierKey
-  left outer join MappedContractProduct mcp
-  on
-  a.PolicyNumber = mcp.PolicyNumber
-  left outer join [ETLStaging].[dbo].[LKP_RidersCategory] atm
-  on a.CarrierKey= atm.CarrierKey
-  where 
-  a.CarrierKey in (4)
-  and mcp.ProductFamilyCode in ('TAS','TBD')
-  and  mcp.ProductCode in ('TASec5', 'TASec10', 'UNK')
-  --and a.[PolicyNumber] not in (select [PolicyNumber] from MappedContractProduct where ProductFamilycode in ('NH','BCA'))
-  and (ChannelKey in (2,3) or ChannelKey is null)
+Select * from #check8
 
 
+select
+distinct ca.advisorkey as CAAdvisorKey, ad.*, mcp.PolicyNumber as contractPolNum, mcp.ProductCode, mcp.ProductDescription,mcp.ProductFamilyCode, mcp.ProductFamilyName, mcp.ProductName, mcp.ProductTypeCode, ua.CarrierKey as UACarrierKey, ua.FundValueAmount, ua.FeePercentage, ua.GuaranteedInterestRate, ua.UnderlyingSecurityName, ua.UnderlyingSecurityTypeCode, ua.FundPercentage, b.TP, b.PolicyNumber, c.IssueDate, c.IssueProcessedDate, atm.ServiceFeatureProductCode, atm.Carrier_Rider_Description, atm.RiderType, atm.Carrier, atm.RiderFamily, atm.Bonus, atm.Joint, atm.SFExportRiderMarketingName into #check9
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer JOIN ContractValuationPivoted b on c.PolicyNumber= b.PolicyNumber and c.CarrierKey = b.CarrierKey
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+left outer join #adv2 ad on ca.AdvisorKey = ad.AdvisorKey
+left outer join LKP_RidersCategory atm on c.CarrierKey= atm.CarrierKey
+where 
+year(c.issuedate) in (2021) 
+--and mcp.ProductFamilyName in ('New Heights')
+and mcp.ProductFamilyName in ('Balanced Choice Annuity') 
+-- and mcp.ProductCode in ('NHSA', 'NHSB','NS12', 'NS8A'  ,'NS9A' ,'NS9B','NS9C')
+and  ca.AdvisorKey = ad.AdvisorKey
+and(l.CarrierKey= 1)
+and ((atm.Carrier_Rider_Description='Fer Max With Premium Bonus') or (atm.Carrier_Rider_Description= 'Fer With Premium Bonus'))
+--and(l.CarrierKey= 1 or l.CarrierKey= 3)
 
-
-
+Select * from #check9
