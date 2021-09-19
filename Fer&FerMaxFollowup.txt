@@ -1,0 +1,31 @@
+select * 
+into #adv2
+from advisor a 
+where
+a.AdvisorRecordTypeCode = 'Advisor'
+       --and a.AdvisorRoleKey = 2
+       and a.AdvisorTypeCode = 1
+and a.DeletedFlag = 0
+
+select
+distinct ca.advisorkey as CAAdvisorKey, ad.*, atm.Carrier_Rider_Description, mcp.PolicyNumber as contractPolNum, mcp.ProductCode, mcp.ProductDescription,mcp.ProductFamilyCode, mcp.ProductFamilyName, mcp.ProductName, mcp.ProductTypeCode, ua.CarrierKey as UACarrierKey, ua.FundValueAmount,ua.FeePercentage, ua.GuaranteedInterestRate, ua.UnderlyingSecurityName, ua.UnderlyingSecurityTypeCode, ua.FundPercentage, b.TP, b.PolicyNumber, c.IssueDate, c.IssueProcessedDate into #check6
+from
+contractagent ca
+inner join contract c on ca.policynumber = c.PolicyNumber
+inner join mappedcontractproduct mcp on c.policynumber = mcp.policynumber
+left outer JOIN ContractValuationPivoted b on c.PolicyNumber= b.PolicyNumber and c.CarrierKey = b.CarrierKey
+left outer join UnderlyingAsset ua on c.policynumber = ua.policynumber
+left outer join lkp_underlyingasset l on ua.UnderlyingSecurityName = l.UnderlyingSecurityName
+left outer join #adv2 ad on ca.AdvisorKey = ad.AdvisorKey
+left outer join LKP_RidersCategory atm on c.CarrierKey= atm.CarrierKey
+where 
+year(c.issuedate) in (2021) 
+--and mcp.ProductFamilyName in ('New Heights')
+and mcp.ProductFamilyName in ('Balanced Choice Annuity') 
+-- and mcp.ProductCode in ('NHSA', 'NHSB','NS12', 'NS8A'  ,'NS9A' ,'NS9B','NS9C')
+and  ca.AdvisorKey = ad.AdvisorKey
+and(l.CarrierKey= 1)
+and ((atm.Carrier_Rider_Description='Fer Max With Premium Bonus') or (atm.Carrier_Rider_Description= 'Fer With Premium Bonus'))
+--and(l.CarrierKey= 1 or l.CarrierKey= 3)
+
+Select * from #check6

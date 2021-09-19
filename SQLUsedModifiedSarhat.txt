@@ -1,0 +1,64 @@
+SELECT
+--pp.PolicyNumber
+--, pp.IssueDate
+--, ca.SFContactId
+--, ca.AdvisorName
+----, pp.StrategyFamily
+----, pp.FundValueAmount IndexAmount
+--, cvp.tp TotalPremium
+--, cvp.DTV DailyTrackingValue
+--, cvp.DTV_ValuationDate DailyTrackingValueLastDate
+--, cvp.TW TotalWithdrawl
+--,cvp.TW_ValuationDate TotalWithdrawlLastDate
+MONTH(pp.IssueDate) MonthNumber
+,DATENAME(mm,pp.IssueDate) IssueMonthName
+,YEAR(pp.IssueDate) YEARNumber
+, ca.SFContactId
+, ca.AdvisorName
+, COUNT(DISTINCT pp.PolicyNumber) NumberofPolicies
+FROM
+contract pp
+LEFT OUTER JOIN dbo.ContractValuationPivoted cvp
+ON pp.PolicyNumber = cvp.PolicyNumber
+LEFT OUTER join
+(
+SELECT
+DISTINCT ca.PolicyNumber, a.AdvisorKey, a.SFContactId, a.FullName AdvisorName
+FROM
+dbo.ContractAgent ca
+INNER JOIN advisor a
+ON ca.AdvisorKey = a.AdvisorKey
+INNER JOIN dbo.ContractAgentRole car
+ON car.CarrierKey = ca.CarrierKey AND car.PolicyNumber = ca.PolicyNumber AND car.IDTypeCode = ca.IDTypeCode AND car.Identifier = ca.Identifier
+WHERE
+ca.CarrierKey = 3
+AND a.DeletedFlag = 0
+AND a.AdvisorTypeCode =1 
+AND a.AdvisorRecordTypeCode = 'Advisor'
+AND car.AdvisorRoleKey = 18
+) ca
+ON pp.policynumber = ca.policynumber
+WHERE
+pp.CarrierKey = 3
+AND YEAR(pp.IssueDate) IN (2015,2016,2017)
+AND MONTH(pp.IssueDate) IN (1,2,3,4,5,6,7,8,9, 10,11,12)
+AND pp.PolicyNumber IN (SELECT policynumber FROM dbo.MappedContractProduct mcp WHERE mcp.CarrierKey = 3 AND mcp.ProductFamilyCode = 'NH')
+AND pp.PolicyNumber IN 
+(
+SELECT ua.policynumber 
+FROM
+dbo.UnderlyingAsset ua
+INNER JOIN dbo.LKP_UnderlyingAsset lu
+ON lu.UnderlyingSecurityName = ua.UnderlyingSecurityName AND lu.CarrierKey = ua.CarrierKey 
+WHERE
+ua.CarrierKey = 3
+AND ua.FundValueAmount <> 0
+AND ua.FundValueAmount IS NOT NULL
+--AND lu.StrategyFamily IN ('ZEBRA','MOZAIC II')
+)
+
+GROUP BY MONTH(pp.IssueDate)  
+, YEAR(pp.IssueDate)
+, DATENAME(mm,pp.IssueDate)  
+, ca.SFContactId
+, ca.AdvisorName
