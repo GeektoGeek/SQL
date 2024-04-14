@@ -1,0 +1,11 @@
+Here are the commands we have utilized in this video:
+docker pull mongo
+docker create mongo
+docker ps –a
+docker run --name mongo_v1 -d -p 27023:27017 mongo
+
+Download Compass:
+https://www.mongodb.com/try/download/atlascli
+
+Connect the Compass with Docker Mongodb
+mongodb://localhost:27023
